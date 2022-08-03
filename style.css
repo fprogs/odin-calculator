@@ -22,16 +22,20 @@
 }
 
 .display {
+  padding: 5px;
   border: 1px solid black;
-  border-radius: 20px;
+  border-radius: 15px;
 }
 
 .expression {
-  height: 90px;
+  height: 55px;
+  font-size: 2.5rem;
 }
 
 .answer {
-  height: 45px;
+  height: 34px;
+  text-align: right;
+  font-size: 1.5rem;
 }
 
 .row {
