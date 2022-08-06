@@ -7,8 +7,9 @@ const RPAREN = ')';
 const NEGATIVE_SIGN = '-';
 const POWER_SIGN = '^';
 const DECIMAL = '.';
+const ZERO = '0';
 const SYNTAX_ERROR_MESSAGE = 'Syntax Error';
-
+const DIVIDE_BY_ZERO_ERROR_MESSAGE = 'Math Error';
 
 function isNumber(n) {
   return !isNaN(n);
@@ -139,12 +140,11 @@ const calculator = {
           && tokens[nextPos] !== LPAREN
           && tokens[nextPos] !== RPAREN
         ) {
-          throw 'Syntax Error';
+          throw SYNTAX_ERROR_MESSAGE;
         }
         token = parseFloat(token);
-      } else if (
-        this.binaryOperators.includes(token)
-        && (
+      } else if (this.binaryOperators.includes(token)) {
+        if (
           prevPos < 0
           || nextPos === tokens.length
           || (
@@ -152,9 +152,11 @@ const calculator = {
             && !this.unaryOperators.includes(tokens[nextPos])
             && tokens[nextPos] !== LPAREN
           )
-        )
-      ) {
-        throw 'Syntax Error';
+        ) {
+          throw SYNTAX_ERROR_MESSAGE;
+        } else if (tokens[nextPos] === ZERO) {
+          throw DIVIDE_BY_ZERO_ERROR_MESSAGE;
+        }
       } else if (
         this.unaryOperators.includes(token)
         && (
@@ -165,7 +167,7 @@ const calculator = {
           )
         )
       ) {
-        throw 'Syntax Error';
+        throw SYNTAX_ERROR_MESSAGE;
       } else if (token === LPAREN) {
         if (
           nextPos === tokens.length
@@ -175,7 +177,7 @@ const calculator = {
             && tokens[nextPos] !== LPAREN
           )
         ) {
-          throw 'Syntax Error';
+          throw SYNTAX_ERROR_MESSAGE;
         }
         if (
           !(prevPos < 0)
@@ -197,17 +199,17 @@ const calculator = {
             && tokens[nextPos] !== LPAREN
           )
         ) {
-          throw 'Syntax Error';
+          throw SYNTAX_ERROR_MESSAGE;
         }
         if (lparens.pop() === undefined) {
-          throw 'Syntax Error';
+          throw SYNTAX_ERROR_MESSAGE;
         }
       }
       validatedTokens.push(token);
       currPos++;
     }
     if (lparens.length) {
-      throw 'Syntax Error';
+      throw SYNTAX_ERROR_MESSAGE;
     }
     return validatedTokens;
   },
@@ -268,7 +270,10 @@ const calculator = {
   },
 
   updateDisplay(event) {
-    if (this.expressionArea.textContent !== SYNTAX_ERROR_MESSAGE) {
+    if (
+      this.expressionArea.textContent !== SYNTAX_ERROR_MESSAGE
+      && this.expressionArea.textContent !== DIVIDE_BY_ZERO_ERROR_MESSAGE
+    ) {
       let buttonText = event.target.textContent
       if (buttonText === '( - )') {
         buttonText = '-';
@@ -290,7 +295,10 @@ const calculator = {
   },
 
   deleteLastCharacter(event) {
-    if (this.expressionArea.textContent === SYNTAX_ERROR_MESSAGE) {
+    if (
+      this.expressionArea.textContent === SYNTAX_ERROR_MESSAGE
+      || this.expressionArea.textContent === DIVIDE_BY_ZERO_ERROR_MESSAGE
+    ) {
       this.expressionArea.textContent = this.expression;
     } else {
       const updatedExpression = this.expressionArea.textContent.slice(0, -1);
